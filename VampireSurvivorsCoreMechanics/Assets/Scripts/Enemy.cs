@@ -2,20 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-
+using TMPro;
 public class Enemy : MonoBehaviour
 {
+    [Header("GameObject References")]
     GameObject player;
-    public GameObject xpOrbDrop;
+    [SerializeField] GameObject xpOrbDrop;
 
-    public float speed;
+    [Header("Movement & Damage")]
+    [SerializeField] float speed;
     public float enemyDamage = 1f;
 
+    [Header("Health")]
     public float maximumHealthEnemy = 16;
     public float HealthEnemy;
 
-
-    public float xpOrbDropChance = 80;
+    [Header("XP Orb")]
+    [SerializeField] float xpOrbDropChance = 80;
     // Start is called before the first frame update
     void Start()
     {
@@ -52,5 +55,11 @@ public class Enemy : MonoBehaviour
         {
             collision.gameObject.GetComponent<PlayerHealth>().HurtPlayer(enemyDamage);
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        
     }
 }

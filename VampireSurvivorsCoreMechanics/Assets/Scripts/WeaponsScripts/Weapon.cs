@@ -1,23 +1,83 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    //[SerializeField] Transform closestEnemy;
+    enum State { Idle, Attack }
+    State state;
+
+
+    [Header("Hit Detection")]
+    [SerializeField] Transform hitDetectionTransform;
+    [SerializeField] float hitRange;
+
+    [Header("Attack Settings")]
     [SerializeField] float range;
+    [SerializeField] int damage;
+    List<Enemy> attackedEnemies = new List<Enemy>();
     [SerializeField] LayerMask enemyLayer;
+
+    [Header("Aiming Settings")]
     [SerializeField] float aimLerp;
+    [Header("Animations")]
+    [SerializeField] Animator animator;
     // Start is called before the first frame update
     void Start()
     {
-        
+        state = State.Idle;
     }
 
     // Update is called once per frame
     void Update()
     {
-        FindNearestEnemy();
+        switch (state)
+        {
+            case State.Idle:
+                AutoAim();
+                break;
+            case State.Attack:
+                Attacking();
+                break;
+        }
+
+        //AutoAim();
+        //Attack();
+    }
+
+    [NaughtyAttributes.Button]
+    void StartAttack()
+    {
+        animator.Play("Attack");
+        state = State.Attack;
+    }
+
+    private void Attacking()
+    {
+        Attack();
+    }
+
+    void StopAttack()
+    {
+        state = State.Idle;
+        attackedEnemies.Clear();
+    }
+
+    private void Attack()
+    {
+        //throw new NotImplementedException();
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(hitDetectionTransform.position, hitRange, enemyLayer);
+        for (int i = 0; i < enemies.Length; i++)
+        {
+            Enemy enemy =  enemies[i].GetComponent<Enemy>();
+            if (!attackedEnemies.Contains(enemy))
+            {
+                enemies[i].GetComponent<Enemy>().HurtEnemy(damage);
+                attackedEnemies.Add(enemy);
+            }
+
+        }
     }
 
     void AutoAim() {
@@ -52,5 +112,8 @@ public class Weapon : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, range);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(hitDetectionTransform.position, hitRange);
     }
 }
