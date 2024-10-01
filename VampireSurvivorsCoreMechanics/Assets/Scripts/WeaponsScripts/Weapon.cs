@@ -16,6 +16,8 @@ public class Weapon : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] float range;
     [SerializeField] int damage;
+    [SerializeField] float attackDelay;
+    float attackTimer;
     List<Enemy> attackedEnemies = new List<Enemy>();
     [SerializeField] LayerMask enemyLayer;
 
@@ -51,6 +53,8 @@ public class Weapon : MonoBehaviour
     {
         animator.Play("Attack");
         state = State.Attack;
+
+        animator.speed = 1f / attackDelay;
     }
 
     private void Attacking()
@@ -85,8 +89,24 @@ public class Weapon : MonoBehaviour
         Vector2 targetUpVector = Vector3.up;
         transform.up = Vector3.Lerp(transform.up, targetUpVector, Time.deltaTime * aimLerp);
         if (closestEnemy != null)
-            targetUpVector = (closestEnemy.transform.position - transform.position).normalized;
+        { targetUpVector = (closestEnemy.transform.position - transform.position).normalized; AttackTimer(); }
+
+        PauseWait();
     }
+
+    private void AttackTimer()
+    {
+        if (attackTimer >= attackDelay) {
+            attackTimer = 0;
+            StartAttack();
+        }
+    }
+
+    void PauseWait()
+    {
+        attackTimer += Time.deltaTime;
+    }
+
     Enemy FindNearestEnemy()
     {
         Enemy closestEnemy = null;
