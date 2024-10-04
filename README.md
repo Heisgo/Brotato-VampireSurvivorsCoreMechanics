@@ -14,3 +14,4 @@ Arena shooter roguelike;
 Waves of Enemies;
 
 Bosses.
+**THE PROJECT IS STILL IN DEVELOPMENT! IT'S NOT COMPLETE YET!**
