@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float projectileSpeed;
+    /*public float projectileSpeed;
     public float bulletDamage;
     //public float speed;
     public GameObject projectile;
@@ -33,5 +33,5 @@ public class Projectile : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
-    }
+    }*/
 }

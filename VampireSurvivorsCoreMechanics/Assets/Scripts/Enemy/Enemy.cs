@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using TMPro;
+using System;
 public class Enemy : MonoBehaviour
 {
     [Header("GameObject References")]
@@ -19,6 +18,8 @@ public class Enemy : MonoBehaviour
 
     [Header("XP Orb")]
     [SerializeField] float xpOrbDropChance = 80;
+    [Header("Actions")]
+    public static Action<int, Vector2> onDamageTaken;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,27 +34,22 @@ public class Enemy : MonoBehaviour
             transform.position = Vector2.MoveTowards(transform.position, player.transform.position, speed * Time.deltaTime);
     }
 
-    public void HurtEnemy(float danoParaReceber)
+    public void HurtEnemy(int danoParaReceber)
     {
+        onDamageTaken?.Invoke(danoParaReceber, transform.position);
         HealthEnemy -= danoParaReceber;
+
+
 
         if (HealthEnemy <= 0)
         {
             // bro's dead lmao 
-            float xpRandomNumber = Random.Range(0, 100);
+            float xpRandomNumber = UnityEngine.Random.Range(0, 100);
             if (xpRandomNumber < xpOrbDropChance)
             {
                 Instantiate(xpOrbDrop, transform.position, transform.rotation);
             }
             Destroy(this.gameObject);
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            collision.gameObject.GetComponent<PlayerHealth>().HurtPlayer(enemyDamage);
         }
     }
 

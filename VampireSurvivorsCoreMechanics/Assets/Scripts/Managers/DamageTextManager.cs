@@ -1,27 +1,55 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class DamageTextManager : MonoBehaviour
 {
     [SerializeField] DamageText damageTextPrefab;
+    [Header("Pool")]
+    private ObjectPool<DamageText> damageTextPool;
+    private void Awake()
+    {
+        Enemy.onDamageTaken += DisplayDamageText;   
+    }
+    private void OnDestroy()
+    {
+        Enemy.onDamageTaken -= DisplayDamageText;
+    }
     // Start is called before the first frame update
     void Start()
     {
-        
+        damageTextPool = new ObjectPool<DamageText>(CreateFunction, ActionGet,ActionOnRelease);
     }
+
+    DamageText CreateFunction()
+    {
+        return Instantiate(damageTextPrefab, transform);
+    }
+    void ActionGet(DamageText dmgText)
+    {
+        dmgText.gameObject.SetActive(true);
+    }
+    void ActionOnRelease(DamageText dmgText)
+    {
+        dmgText.gameObject.SetActive(false);    
+    }
+
 
     // Update is called once per frame
     void Update()
     {
         
     }
-
-    [NaughtyAttributes.Button]
-    public void InstantiateDamageText()
+    
+    public void DisplayDamageText(int dmg, Vector2 enemyPosition)
     {
-        Vector3 spawnPosition = Random.insideUnitCircle * Random.Range(1f, 4f);
-        DamageText dmgTextIndex = Instantiate(damageTextPrefab, spawnPosition, Quaternion.identity ,transform);
-        dmgTextIndex.Animate();
+        DamageText dmgTextIndex = damageTextPool.Get();
+        Vector3 spawnPosition = enemyPosition;
+        dmgTextIndex.transform.position = spawnPosition;
+
+        dmgTextIndex.Animate(dmg);
+        LeanTween.delayedCall(1, () => damageTextPool.Release(dmgTextIndex));
+
     }
 }

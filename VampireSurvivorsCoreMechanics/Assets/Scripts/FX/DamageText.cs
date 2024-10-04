@@ -22,9 +22,9 @@ public class DamageText : MonoBehaviour
     }
 
     [NaughtyAttributes.Button]
-    public void Animate()
+    public void Animate(int dmg)
     {
-        dmgText.text = Random.Range(0, 12).ToString();
+        dmgText.text = dmg.ToString();
         animator.Play("DamageTextAnim");
     }
 }

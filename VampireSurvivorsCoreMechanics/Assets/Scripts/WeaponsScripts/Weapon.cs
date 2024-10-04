@@ -71,7 +71,9 @@ public class Weapon : MonoBehaviour
     private void Attack()
     {
         //throw new NotImplementedException();
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(hitDetectionTransform.position, hitRange, enemyLayer);
+        Collider2D[] enemies = Physics2D.OverlapBoxAll(hitDetectionTransform.position, 
+            hitDetectionTransform.GetComponent<BoxCollider2D>().bounds.size, hitDetectionTransform.
+            localEulerAngles.z, enemyLayer);
         for (int i = 0; i < enemies.Length; i++)
         {
             Enemy enemy =  enemies[i].GetComponent<Enemy>();
@@ -87,10 +89,9 @@ public class Weapon : MonoBehaviour
     void AutoAim() {
         Enemy closestEnemy = FindNearestEnemy();
         Vector2 targetUpVector = Vector3.up;
-        transform.up = Vector3.Lerp(transform.up, targetUpVector, Time.deltaTime * aimLerp);
         if (closestEnemy != null)
-        { targetUpVector = (closestEnemy.transform.position - transform.position).normalized; AttackTimer(); }
-
+        { targetUpVector = (closestEnemy.transform.position - transform.position).normalized; transform.up = targetUpVector ; AttackTimer(); }
+        transform.up = Vector3.Lerp(transform.up, targetUpVector, Time.deltaTime * aimLerp);
         PauseWait();
     }
 
